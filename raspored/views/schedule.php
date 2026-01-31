@@ -55,11 +55,7 @@ while ($row = $shiftsRes->fetch_assoc()) {
     $grid[(int)$row['employee_id']][$d] = $row['shift_type'];
 }
 
-/**
- * NOTE:
- * shift_type values in DB are: 'jutarnja', 'popodnevna', 'nocna'
- * We keep those values for compatibility and translate only labels.
- */
+
 function shiftCode(?string $type): string {
     if ($type === 'jutarnja') return 'M'; // Morning
     if ($type === 'popodnevna') return 'A'; // Afternoon
@@ -112,7 +108,7 @@ function shiftLabel(?string $type): string {
     .alert{padding:10px 12px;border-radius:8px;margin:0 0 12px;font-weight:800}
     .ok{background:#e9f7ef;border:1px solid #b7e2c3}
 
-    /* ✅ inline edit */
+   
     td.editable { cursor: pointer; }
     td.editable select {
       width: 100%;
@@ -314,3 +310,4 @@ function shiftLabel(?string $type): string {
 
 </body>
 </html>
+
