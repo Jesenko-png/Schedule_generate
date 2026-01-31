@@ -30,7 +30,7 @@ function monthlyNormHours(float $weeklyHours, int $year, int $month): float {
     return ($weeklyHours / 5.0) * $workdays;
 }
 
-/** ✅ avoid duplicates */
+
 if ($conn->query("DELETE FROM shifts WHERE shift_date LIKE '$year-$monthStr-%'") === false) {
     die('Delete error: ' . $conn->error);
 }
@@ -44,12 +44,12 @@ if (count($employees) === 0) {
     exit;
 }
 
-$shiftHours = 8.0;   // one shift = 8 hours
-$nightRatio = 0.12;  // nights ~12% of workdays (only for can_night)
+$shiftHours = 8.0;   
+$nightRatio = 0.12;  
 
 $quota = [];
 $lastShift = [];
-$consec = []; // ✅ consecutive WORKING days (non-off)
+$consec = []; 
 
 foreach ($employees as $e) {
     $id = (int)$e['id'];
@@ -86,13 +86,13 @@ function pickShift(array &$q, ?string $prev): ?string {
     }
     if (!$cands) return null;
 
-    // rule: afternoon -> next day cannot be morning
+
     if ($prev === 'popodnevna') {
         $cands = array_values(array_filter($cands, fn($x) => $x !== 'jutarnja'));
         if (!$cands) return null;
     }
 
-    // prefer the shift type that has the highest remaining quota
+  
     usort($cands, fn($a,$b) => ($q[$b] ?? 0) <=> ($q[$a] ?? 0));
     $top = array_slice($cands, 0, min(2, count($cands)));
     return $top[array_rand($top)];
@@ -107,10 +107,10 @@ for ($day = 1; $day <= $daysInMonth; $day++) {
     foreach ($employees as $e) {
         $id = (int)$e['id'];
 
-        // ✅ max 7 consecutive working days -> the 8th must be OFF
+        
         $worked = $consec[$id] ?? 0;
         if ($worked >= 7) {
-            // ensure there is an OFF quota (if not, "steal" one shift)
+           
             if (($quota[$id]['off'] ?? 0) <= 0) {
                 if (($quota[$id]['popodnevna'] ?? 0) > 0) { $quota[$id]['popodnevna']--; $quota[$id]['off'] = 1; }
                 else if (($quota[$id]['jutarnja'] ?? 0) > 0) { $quota[$id]['jutarnja']--; $quota[$id]['off'] = 1; }
@@ -132,7 +132,7 @@ for ($day = 1; $day <= $daysInMonth; $day++) {
         if ($choice === 'off') {
             $quota[$id]['off']--;
             $lastShift[$id] = 'off';
-            $consec[$id] = 0;   // ✅ reset streak
+            $consec[$id] = 0;   
             continue;
         }
 
@@ -141,10 +141,11 @@ for ($day = 1; $day <= $daysInMonth; $day++) {
 
         $quota[$id][$choice]--;
         $lastShift[$id] = $choice;
-        $consec[$id] = ($consec[$id] ?? 0) + 1; // ✅ increase streak
+        $consec[$id] = ($consec[$id] ?? 0) + 1; 
     }
 }
 
 $fromAdd = isset($_GET['employee_added']) ? 1 : 0;
 header("Location: " . BASE_URL . "/views/schedule.php?year=$year&month=$month&success=1&employee_added=$fromAdd");
 exit;
+
